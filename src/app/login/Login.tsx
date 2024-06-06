@@ -3,35 +3,35 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-// import { signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 
 export default function Login() {
-  // const [data, setData] = useState({ username: "", password: "" });
-  // const router = useRouter();
+  const [data, setData] = useState({ username: "", password: "" });
+  const router = useRouter();
 
-  // const handleLogin = async (e: any) => {
-  //   e.preventDefault();
-  //   try {
-  //     const res = await signIn("credentials", {
-  //       redirect: false,
-  //       username: data.username,
-  //       password: data.password,
-  //       callbackUrl: "/",
-  //     });
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        username: data.username,
+        password: data.password,
+        callbackUrl: "/",
+      });
 
-  //     if (res?.error) {
-  //       toast.error(res.error);
-  //       throw new Error(res.error);
-  //     } else {
-  //       toast.success("Login Success");
-  //       router.push("/");
-  //       router.refresh();
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+      if (res?.error) {
+        toast.error(res.error);
+        throw new Error(res.error);
+      } else {
+        toast.success("Login Success");
+        router.push("/");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#E06F2B] flex items-center justify-center">
@@ -60,7 +60,7 @@ export default function Login() {
               id="username"
               className="w-full text-black p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
               placeholder="Username"
-              // onChange={(e) => setData({ ...data, username: e.target.value })}
+              onChange={(e) => setData({ ...data, username: e.target.value })}
             />
           </div>
           <div className="mt-4">
@@ -76,13 +76,13 @@ export default function Login() {
               id="password"
               className="w-full text-black p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
               placeholder="Password"
-              // onChange={(e) => setData({ ...data, password: e.target.value })}
+              onChange={(e) => setData({ ...data, password: e.target.value })}
             />
           </div>
           <div className="mt-8">
             <button
               className="w-full p-2 text-lg bg-[#007DFA] text-white rounded-lg focus:outline-none hover:bg-blue-700"
-              // onClick={(e) => handleLogin(e)}
+              onClick={(e) => handleLogin(e)}
             >
               Login
             </button>
