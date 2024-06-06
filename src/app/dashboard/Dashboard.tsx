@@ -10,7 +10,7 @@ export interface Product {
   price: number;
   category: string;
   image: string;
-  quantity?: number; // Tambahkan kuantitas sebagai opsional
+  quantity?: number;
 }
 
 const products: Product[] = [
@@ -40,7 +40,7 @@ const products: Product[] = [
 const Dashboard = () => {
   const [cart, setCart] = useState<Product[]>([]);
   const [filter, setFilter] = useState<string>("All");
-  const [notification, setNotification] = useState<string>("");
+  const [notifications, setNotifications] = useState<Product[]>([]);
 
   const addToCart = (product: Product) => {
     const existingProduct = cart.find((item) => item.id === product.id);
@@ -61,16 +61,17 @@ const Dashboard = () => {
     setCart(
       cart
         .map((item) =>
-          item.id === productId ? { ...item, quantity: (item.quantity || 1) - 1 } : item
+          item.id === productId
+            ? { ...item, quantity: (item.quantity || 1) - 1 }
+            : item
         )
         .filter((item) => item.quantity! > 0)
     );
   };
 
   const checkout = () => {
-    setNotification("Checkout successful!");
+    setNotifications(cart);
     setCart([]);
-    setTimeout(() => setNotification(""), 3000); // Hapus notifikasi setelah 3 detik
   };
 
   const filteredProducts =
@@ -81,7 +82,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       <div className="w-full flex flex-col">
-        <Navbar notification={notification} />
+        <Navbar notifications={notifications} />
         <div className="text-black flex flex-grow">
           <div className="w-3/4 p-4">
             <div className="flex justify-center space-x-4 mb-4">
