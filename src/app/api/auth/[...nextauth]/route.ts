@@ -1,6 +1,5 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
 import { prisma } from "../../../lib/prismadb";
 
 interface Credentials {
@@ -17,23 +16,33 @@ export const authOptions: NextAuthOptions = {
       type: "credentials",
       credentials: {},
       authorize: async (credentials) => {
-        const { username, password } = credentials as Credentials;
+        try {
+          const { username, password } = credentials as Credentials;
 
-        if (!username || !password) {
-          throw new Error("Username and password are required");
+          if (!username || !password) {
+            throw new Error("Username and password are required");
+          }
+
+          const user = await prisma.user.findUnique({
+            where: {
+              username,
+            },
+          });
+
+          if (!user) {
+            throw new Error("User not found");
+          }
+
+          const isPasswordValid = password === user.password;
+
+          if (!isPasswordValid) {
+            throw new Error("Invalid password");
+          }
+
+          return user;
+        } catch (error) {
+          throw new Error(`Authentication failed: ${error}`);
         }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            username,
-          },
-        });
-
-        if (!user || !(await compare(password, user.password))) {
-          throw new Error("Invalid username or password");
-        }
-
-        return user;
       },
     }),
   ],
@@ -43,16 +52,33 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     jwt: async ({ token, user }) => {
-      if (user) {
-        token.uid = user.id;
+      if (user && user.id) {
+        token.uid = user.id as string;
+
+        const userData = await prisma.user.findUnique({
+          where: {
+            id: user.id,
+          },
+        });
       }
+
       return token;
     },
     session: async ({ session, token }) => {
-      session.user = {
-        ...session.user,
-        id: token.uid as string,
-      };
+      const userData = await prisma.user.findUnique({
+        where: {
+          id: token.uid as string,
+        },
+        select: {
+          id: true,
+          username: true,
+        },
+      });
+
+      if (token?.uid && userData) {
+        session.user = userData;
+      }
+
       return session;
     },
   },

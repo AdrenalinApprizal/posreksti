@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 
@@ -9,7 +10,7 @@ export default function Login() {
   const [data, setData] = useState({ username: "", password: "" });
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();
     try {
       const res = await signIn("credentials", {
@@ -21,14 +22,14 @@ export default function Login() {
 
       if (res?.error) {
         toast.error(res.error);
-        return;
+        throw new Error(res.error);
+      } else {
+        toast.success("Login Success");
+        router.push("/");
+        router.refresh();
       }
-
-      toast.success("Login Success");
-      router.push("/");
     } catch (error) {
-      toast.error("Login failed");
-      console.error("Login error:", error);
+      console.error(error);
     }
   };
 
@@ -42,10 +43,10 @@ export default function Login() {
           width={164}
           height={164}
         />
-        <h1 className="text-2xl font-bold text-center">
+        <h1 className="text-black text-2xl font-bold text-center">
           Login to your account
         </h1>
-        <form onSubmit={handleLogin}>
+        <form>
           <div className="mt-4">
             <label
               htmlFor="username"
@@ -59,14 +60,13 @@ export default function Login() {
               id="username"
               className="text-black w-full p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
               placeholder="Username"
-              value={data.username}
               onChange={(e) => setData({ ...data, username: e.target.value })}
             />
           </div>
           <div className="mt-4">
             <label
               htmlFor="password"
-              className="text-black block text-sm font-medium"
+              className="block text-sm font-medium text-gray-700"
             >
               Password
             </label>
@@ -74,16 +74,15 @@ export default function Login() {
               type="password"
               name="password"
               id="password"
-              className="w-full p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
+              className="text-black w-full p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
               placeholder="Password"
-              value={data.password}
               onChange={(e) => setData({ ...data, password: e.target.value })}
             />
           </div>
           <div className="mt-8">
             <button
-              type="submit"
               className="w-full p-2 text-lg bg-[#007DFA] text-white rounded-lg focus:outline-none hover:bg-blue-700"
+              onClick={(e) => handleLogin(e)}
             >
               Login
             </button>

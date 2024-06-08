@@ -1,47 +1,96 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import Cart from "../components/Cart";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   category: string;
-  image: string;
   quantity?: number;
-  user: User;
 }
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Americano Passion Coffee",
-    price: 20000,
-    category: "Coffee",
-    image: "/path/to/image1.jpg",
-  },
-  {
-    id: 2,
-    name: "Macchiato Peper Chocochip",
-    price: 30000,
-    category: "Coffee",
-    image: "/path/to/image2.jpg",
-  },
-  {
-    id: 3,
-    name: "Matcha Latte",
-    price: 25000,
-    category: "Non-Coffee",
-    image: "/path/to/image3.jpg",
-  },
-];
-
 const Dashboard = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<Product[]>([]);
   const [filter, setFilter] = useState<string>("All");
-  const [notifications, setNotifications] = useState<Product[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserSession = async () => {
+      try {
+        const storedUserId = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("userId="));
+        if (storedUserId) {
+          const userId = storedUserId.split("=")[1];
+          setUserId(userId);
+        } else {
+          // Simulasikan login dan simpan userId ke dalam cookie
+          document.cookie = `userId=${userId}`;
+          setUserId(userId);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user session:", error);
+      }
+    };
+
+    fetchUserSession();
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/v1/product", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleCheckout = async () => {
+    try {
+      if (!userId) {
+        throw new Error("User is not logged in");
+      }
+
+      const res = await fetch("/api/v1/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, cart }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Checkout failed");
+      }
+
+      const data = await res.json();
+      console.log("Checkout successful:", data);
+      setCart([]);
+      toast.success("Checkout successful!");
+    } catch (error) {
+      console.error("Checkout failed:", error);
+      toast.error("Checkout failed");
+    }
+  };
 
   const addToCart = (product: Product) => {
     const existingProduct = cart.find((item) => item.id === product.id);
@@ -58,7 +107,7 @@ const Dashboard = () => {
     }
   };
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: string) => {
     setCart(
       cart
         .map((item) =>
@@ -70,11 +119,6 @@ const Dashboard = () => {
     );
   };
 
-  const checkout = () => {
-    setNotifications(cart);
-    setCart([]);
-  };
-
   const filteredProducts =
     filter === "All"
       ? products
@@ -83,7 +127,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       <div className="w-full flex flex-col">
-        <Navbar notifications={notifications} />
+        <Navbar />
         <div className="text-black flex flex-grow">
           <div className="w-3/4 p-4">
             <div className="flex justify-center space-x-4 mb-4">
@@ -134,7 +178,7 @@ const Dashboard = () => {
               cart={cart}
               addToCart={addToCart}
               removeFromCart={removeFromCart}
-              checkout={checkout}
+              checkout={handleCheckout}
             />
           </div>
         </div>

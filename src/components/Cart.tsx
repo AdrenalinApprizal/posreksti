@@ -4,7 +4,7 @@ import { Product } from "../app/Dashboard";
 interface CartProps {
   cart: Product[];
   addToCart: (product: Product) => void;
-  removeFromCart: (productId: number) => void;
+  removeFromCart: (productId: string) => void;
   checkout: () => void;
 }
 
@@ -18,8 +18,6 @@ const Cart: React.FC<CartProps> = ({
     (sum, product) => sum + product.price * (product.quantity || 1),
     0
   );
-  const discount = 2500; // Example discount
-  const total = subtotal - discount;
 
   return (
     <div className="m-2 p-4 bg-white shadow">
@@ -56,8 +54,8 @@ const Cart: React.FC<CartProps> = ({
             ))}
           </ul>
           <div className="mt-4">
-            <p className="text-black flex justify-between">
-              <span>Subtotal</span>
+            <p className="text-black flex justify-between font-semibold">
+              <span>Total</span>
               <span>
                 {new Intl.NumberFormat("id-ID", {
                   style: "currency",
@@ -66,28 +64,8 @@ const Cart: React.FC<CartProps> = ({
                 }).format(subtotal)}
               </span>
             </p>
-            <p className="text-black flex justify-between">
-              <span>Discount</span>
-              <span>
-                {new Intl.NumberFormat("id-ID", {
-                  style: "currency",
-                  currency: "IDR",
-                  minimumFractionDigits: 0,
-                }).format(discount)}
-              </span>
-            </p>
-            <p className="text-black flex justify-between font-semibold">
-              <span>Total</span>
-              <span>
-                {new Intl.NumberFormat("id-ID", {
-                  style: "currency",
-                  currency: "IDR",
-                  minimumFractionDigits: 0,
-                }).format(total)}
-              </span>
-            </p>
             <button
-              className="mt-4 w-full py-2 bg-orange-500 text-black rounded hover:bg-orange-600 transition-all"
+              className="mt-4 w-full py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-all"
               onClick={checkout}
             >
               Checkout

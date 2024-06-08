@@ -19,6 +19,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "user not found" }, { status: 404 });
     }
+
     return NextResponse.json(
       { message: "User successfully updated" },
       { status: 200 }

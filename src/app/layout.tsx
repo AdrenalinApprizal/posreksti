@@ -20,7 +20,6 @@ export default function RootLayout({
     <html lang="en">
       <link rel="icon" href="/logoeasefarm.png" />
       <body className={poppins.className}>
-        {/* <Navbar notifications={[]} /> */}
         <ToasterContext />
         <div>{children}</div>
       </body>

@@ -3,7 +3,7 @@ import { prisma } from "./lib/prismadb";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
-import { Session, User } from "next-auth";
+import { Session } from "next-auth";
 
 const page = async () => {
   const session = (await getServerSession(authOptions)) as Session;
@@ -16,11 +16,7 @@ const page = async () => {
     },
   });
 
-  return (
-    <div>
-      <Dashboard user={user as User} />
-    </div>
-  );
+  return <Dashboard />;
 };
 
 export default page;
