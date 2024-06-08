@@ -1,5 +1,5 @@
 import React from "react";
-import { Product } from "../app/dashboard/Dashboard";
+import { Product } from "../app/Dashboard";
 
 interface CartProps {
   cart: Product[];

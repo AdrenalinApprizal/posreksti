@@ -1,34 +1,34 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import axios from "axios";
+import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 
 export default function Login() {
   const [data, setData] = useState({ username: "", password: "" });
   const router = useRouter();
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/login", data);
-      console.log("Login response:", res.data); // Log login response
+      const res = await signIn("credentials", {
+        redirect: false,
+        username: data.username,
+        password: data.password,
+        callbackUrl: "/",
+      });
 
-      if (res.status === 200) {
-        const { token } = res.data; // Assuming token is returned in the response
-        // Save token to localStorage or cookie
-        localStorage.setItem("token", token);
-
-        toast.success("Login Success");
-        router.push("/dashboard"); // Redirect to dashboard
-      } else {
-        toast.error("Login failed. Please try again.");
+      if (res?.error) {
+        toast.error(res.error);
+        return;
       }
+
+      toast.success("Login Success");
+      router.push("/");
     } catch (error) {
+      toast.error("Login failed");
       console.error("Login error:", error);
-      toast.error("Login failed. Please check your credentials.");
     }
   };
 
@@ -45,7 +45,7 @@ export default function Login() {
         <h1 className="text-2xl font-bold text-center">
           Login to your account
         </h1>
-        <form>
+        <form onSubmit={handleLogin}>
           <div className="mt-4">
             <label
               htmlFor="username"
@@ -57,15 +57,16 @@ export default function Login() {
               type="text"
               name="username"
               id="username"
-              className="w-full text-black p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
+              className="text-black w-full p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
               placeholder="Username"
+              value={data.username}
               onChange={(e) => setData({ ...data, username: e.target.value })}
             />
           </div>
           <div className="mt-4">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="text-black block text-sm font-medium"
             >
               Password
             </label>
@@ -73,15 +74,16 @@ export default function Login() {
               type="password"
               name="password"
               id="password"
-              className="w-full text-black p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
+              className="w-full p-2 border border-[#044D3A] rounded focus:outline-none focus:border-green-500"
               placeholder="Password"
+              value={data.password}
               onChange={(e) => setData({ ...data, password: e.target.value })}
             />
           </div>
           <div className="mt-8">
             <button
+              type="submit"
               className="w-full p-2 text-lg bg-[#007DFA] text-white rounded-lg focus:outline-none hover:bg-blue-700"
-              onClick={(e) => handleLogin(e)}
             >
               Login
             </button>

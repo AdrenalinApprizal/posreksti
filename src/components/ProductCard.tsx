@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Product } from "../app/dashboard/Dashboard";
+import { Product } from "../app/Dashboard";
 
 interface ProductCardProps {
   product: Product;

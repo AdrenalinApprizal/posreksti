@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { IoIosHome } from "react-icons/io";
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
-import { Product } from "../app/dashboard/Dashboard";
+import { Product } from "../app/Dashboard";
 
 interface NavbarProps {
   notifications: Product[];
@@ -17,11 +18,10 @@ const Navbar: React.FC<NavbarProps> = ({ notifications }) => {
         <p className="text-xl text-black font-semibold">Hidden Haus</p>
       </div>
       <div className="flex space-x-4 items-center">
-        <input
-          type="text"
-          placeholder="Search menu..."
-          className="border border-gray-300 rounded px-4 py-2"
-        />
+        <button className="flex items-center font-semibold py-2 px-4 bg-orange-400 rounded hover:bg-orange-100 hover:text-orange-500 cursor-pointer">
+          <IoIosHome className="mr-2" />
+          Home
+        </button>
         <div className="relative">
           <button
             className="flex items-center font-semibold py-2 px-4 bg-orange-400 rounded hover:bg-orange-100 hover:text-orange-500 cursor-pointer"
