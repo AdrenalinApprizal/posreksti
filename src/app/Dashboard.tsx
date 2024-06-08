@@ -45,12 +45,15 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/api/v1/product", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_WEB_URL + "/api/v1/product",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!res.ok) {
           throw new Error("Failed to fetch products");
         }
@@ -70,13 +73,16 @@ const Dashboard = () => {
         throw new Error("User is not logged in");
       }
 
-      const res = await fetch("/api/v1/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, cart }),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_WEB_URL + "/api/v1/checkout",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, cart }),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("Checkout failed");
