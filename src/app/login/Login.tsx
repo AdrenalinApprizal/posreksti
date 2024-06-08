@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 export default function Login() {
@@ -13,23 +13,22 @@ export default function Login() {
   const handleLogin = async (e: any) => {
     e.preventDefault();
     try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        username: data.username,
-        password: data.password,
-        callbackUrl: "/",
-      });
+      const res = await axios.post("/login", data);
+      console.log("Login response:", res.data); // Log login response
 
-      if (res?.error) {
-        toast.error(res.error);
-        throw new Error(res.error);
-      } else {
+      if (res.status === 200) {
+        const { token } = res.data; // Assuming token is returned in the response
+        // Save token to localStorage or cookie
+        localStorage.setItem("token", token);
+
         toast.success("Login Success");
-        router.push("/");
-        router.refresh();
+        router.push("/dashboard"); // Redirect to dashboard
+      } else {
+        toast.error("Login failed. Please try again.");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 

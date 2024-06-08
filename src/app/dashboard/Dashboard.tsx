@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Navbar from "../../components/Navbar";
 import ProductCard from "../../components/ProductCard";
 import Cart from "../../components/Cart";
@@ -9,38 +11,43 @@ export interface Product {
   name: string;
   price: number;
   category: string;
-  image: string;
   quantity?: number;
+  stock?: number;
+  createdAt?: number;
+  updatedAt?: number;
 }
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Americano Passion Coffee",
-    price: 20000,
-    category: "Coffee",
-    image: "/path/to/image1.jpg",
-  },
-  {
-    id: 2,
-    name: "Macchiato Peper Chocochip",
-    price: 30000,
-    category: "Coffee",
-    image: "/path/to/image2.jpg",
-  },
-  {
-    id: 3,
-    name: "Matcha Latte",
-    price: 25000,
-    category: "Non-Coffee",
-    image: "/path/to/image3.jpg",
-  },
-];
-
 const Dashboard = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<Product[]>([]);
   const [filter, setFilter] = useState<string>("All");
   const [notifications, setNotifications] = useState<Product[]>([]);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/v1/product"); // Pastikan endpoint ini benar
+        const fetchedProducts = response.data.map(
+          (item: any, index: number) => ({
+            id: index + 1,
+            name: item.name,
+            price: item.price,
+            category: item.type === "Noncoffe" ? "Non-Coffee" : "Coffee",
+            stock: item.stock,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          })
+        );
+        setProducts(fetchedProducts);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setMessage("Failed to fetch products");
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const addToCart = (product: Product) => {
     const existingProduct = cart.find((item) => item.id === product.id);
@@ -69,9 +76,16 @@ const Dashboard = () => {
     );
   };
 
-  const checkout = () => {
-    setNotifications(cart);
-    setCart([]);
+  const checkout = async () => {
+    try {
+      const response = await axios.post("/api/v1/transaction", { items: cart });
+      setNotifications(cart);
+      setCart([]);
+      setMessage("Checkout successful");
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setMessage("Failed to checkout");
+    }
   };
 
   const filteredProducts =
