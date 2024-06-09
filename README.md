@@ -2,11 +2,11 @@
 
 ## Point Of Sales
 
+LINK WEBSITE : https://posreksti.vercel.app/
+
 <p align="justify"> Platform Point Of Sales menyediakan inovasi sistem yang berkomitmen untuk membantu kasir pada kafe berjalan dengan efisien dan efektif. <p>
 
 ## Anggota Kelompok 14
-
-
 
 ## Alur Penggunaan
 
