@@ -1,10 +1,10 @@
 # <h1 align="center"> Tugas Besar Rekayasa Sistem dan Teknologi Informasi <h4 align="center"> Kelompok 14 K01 </h4> </h1>
 
-## EaseFarm
+## Point Of Sales
 
 <p align="justify"> Platform Point Of Sales menyediakan inovasi sistem yang berkomitmen untuk membantu kasir pada kafe berjalan dengan efisien dan efektif. <p>
 
-## Anggota Kelompok 7
+## Anggota Kelompok 14
 
 
 
